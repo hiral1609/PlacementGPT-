@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PlacementGPT</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-mesh"></div>
+    <div class="mouse-glow"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="index.html" class="logo sidebar-logo" style="text-decoration: none; color: inherit;">
+            <i class="fa-solid fa-brain glow-text"></i>
+            <span>Placement<span class="highlight gradient-text">GPT</span></span>
+        </a>
+        <ul class="sidebar-links">
+            <li><a href="dashboard.html" class="active"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="resume-analyzer.html"><i class="fa-solid fa-file-contract"></i> Resume Analyzer</a></li>
+            <li><a href="mock-interview.html"><i class="fa-solid fa-video"></i> Mock Interview</a></li>
+            <li><a href="roadmap.html"><i class="fa-solid fa-route"></i> Roadmap</a></li>
+            <li><a href="aptitude.html"><i class="fa-solid fa-brain"></i> Aptitude Test</a></li>
+            <li><a href="hr-answers.html"><i class="fa-solid fa-comment-dots"></i> HR Answers</a></li>
+        </ul>
+        <div class="sidebar-user" style="position: relative; cursor: pointer;" onclick="document.getElementById('edit-profile-modal').style.display='flex'">
+            <img src="https://i.pravatar.cc/150?img=11" alt="User" class="avatar" id="sidebar-dp">
+            <div class="user-info">
+                <h4 id="sidebar-name">Alex Johnson</h4>
+                <p>Edit Profile <i class="fa-solid fa-pen" style="font-size: 10px;"></i></p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <div>
+                <h1 class="font-heading">Welcome back, Alex! 👋</h1>
+                <p class="text-muted">Here is your preparation overview for today.</p>
+            </div>
+            <div class="header-actions" style="position: relative;">
+                <button class="btn btn-outline notification-btn" onclick="toggleNotifications()">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="badge" id="notif-badge">0</span>
+                </button>
+                <div id="notif-dropdown" style="display: none; position: absolute; top: 60px; right: 150px; width: 300px; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000; max-height: 300px; overflow-y: auto;">
+                    <h4 style="margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">Notifications</h4>
+                    <ul id="notif-list" style="list-style: none; font-size: 13px; color: var(--text-muted);">
+                        <li>No new notifications</li>
+                    </ul>
+                </div>
+                <a href="mock-interview.html" class="btn btn-primary magnetic">Start Interview</a>
+            </div>
+        </header>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid">
+            <div class="metric-card glass-card">
+                <div class="metric-header">
+                    <h3>Resume ATS Score</h3>
+                    <i class="fa-solid fa-file-pdf text-blue"></i>
+                </div>
+                <div class="progress-circle" data-percent="85">
+                    <svg viewBox="0 0 36 36" class="circular-chart blue">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle" stroke-dasharray="85, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="percentage">85%</text>
+                    </svg>
+                </div>
+                <p class="metric-status text-green"><i class="fa-solid fa-arrow-up"></i> 5% from last week</p>
+            </div>
+
+            <div class="metric-card glass-card">
+                <div class="metric-header">
+                    <h3>Interview Readiness</h3>
+                    <i class="fa-solid fa-video text-secondary"></i>
+                </div>
+                <div class="progress-circle" data-percent="72">
+                    <svg viewBox="0 0 36 36" class="circular-chart purple">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle" stroke-dasharray="72, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="percentage">72%</text>
+                    </svg>
+                </div>
+                <p class="metric-status text-yellow"><i class="fa-solid fa-minus"></i> Needs Practice</p>
+            </div>
+
+            <div class="metric-card glass-card">
+                <div class="metric-header">
+                    <h3>Daily Coding</h3>
+                    <i class="fa-solid fa-code text-green"></i>
+                </div>
+                <div class="metric-value">
+                    <span class="value-num">4/5</span>
+                    <span class="value-label">problems</span>
+                </div>
+                <div class="linear-progress">
+                    <div class="progress-bar green-bar" style="width: 80%;"></div>
+                </div>
+                <p class="metric-status text-green"><i class="fa-solid fa-fire"></i> 12 Day Streak!</p>
+            </div>
+
+            <div class="metric-card glass-card">
+                <div class="metric-header">
+                    <h3>Confidence Meter</h3>
+                    <i class="fa-solid fa-bolt text-yellow"></i>
+                </div>
+                <div class="metric-value">
+                    <span class="value-num">High</span>
+                </div>
+                <div class="audio-waves">
+                    <div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div>
+                </div>
+                <p class="metric-status text-green">Steady improvement</p>
+            </div>
+        </div>
+
+        <!-- Charts and Details -->
+        <div class="dashboard-details">
+            <div class="chart-container glass-card hover-expand">
+                <h3>Weekly Growth</h3>
+                <div class="mock-chart">
+                    <!-- Simple CSS Bar Chart -->
+                    <div class="bar-col"><div class="bar" style="height: 40%"></div><span>Mon</span></div>
+                    <div class="bar-col"><div class="bar" style="height: 60%"></div><span>Tue</span></div>
+                    <div class="bar-col"><div class="bar" style="height: 55%"></div><span>Wed</span></div>
+                    <div class="bar-col"><div class="bar" style="height: 80%"></div><span>Thu</span></div>
+                    <div class="bar-col"><div class="bar active" style="height: 95%"></div><span>Fri</span></div>
+                </div>
+            </div>
+
+            <div class="recent-activity glass-card">
+                <h3>Recent Activity</h3>
+                <ul class="activity-list">
+                    <li>
+                        <div class="activity-icon blue-bg"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="activity-text">
+                            <h4>Analyzed Google SWE Resume</h4>
+                            <p>Score improved to 92%</p>
+                        </div>
+                        <span class="activity-time">2h ago</span>
+                    </li>
+                    <li>
+                        <div class="activity-icon purple-bg"><i class="fa-solid fa-video"></i></div>
+                        <div class="activity-text">
+                            <h4>Mock HR Interview</h4>
+                            <p>Confidence score: 85/100</p>
+                        </div>
+                        <span class="activity-time">Yesterday</span>
+                    </li>
+                    <li>
+                        <div class="activity-icon green-bg"><i class="fa-solid fa-check"></i></div>
+                        <div class="activity-text">
+                            <h4>Completed Arrays Module</h4>
+                            <p>Earned 'Data Master' Badge</p>
+                        </div>
+                        <span class="activity-time">2 days ago</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+        <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 30px; border-radius: 20px; width: 400px; max-width: 90%;">
+            <h2 style="margin-bottom: 20px;">Edit Profile</h2>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 14px; color: var(--text-muted);">Profile Picture</label>
+                <div style="display: flex; gap: 15px; align-items: center; margin-top: 5px;">
+                    <img src="https://i.pravatar.cc/150?img=11" id="edit-dp-preview" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                    <input type="file" id="edit-dp" accept="image/*" class="input-field" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; border-radius: 8px;">
+                </div>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 14px; color: var(--text-muted);">Full Name</label>
+                <input type="text" id="edit-name" class="input-field" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; border-radius: 8px; margin-top: 5px;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 14px; color: var(--text-muted);">Email Address</label>
+                <input type="email" id="edit-email" class="input-field" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; border-radius: 8px; margin-top: 5px;" placeholder="Enter your email">
+            </div>
+            <div style="margin-bottom: 25px;">
+                <label style="font-size: 14px; color: var(--text-muted);">Contact Number</label>
+                <input type="text" id="edit-contact" class="input-field" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; border-radius: 8px; margin-top: 5px;" placeholder="Enter your phone number">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-outline" onclick="document.getElementById('edit-profile-modal').style.display='none'">Cancel</button>
+                <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

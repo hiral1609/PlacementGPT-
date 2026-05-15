@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlacementGPT - Your AI Placement Mentor</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-mesh"></div>
+    <div class="bg-particles" id="particles"></div>
+    <div class="mouse-glow"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="index.html" class="logo" style="text-decoration: none; color: inherit;">
+            <i class="fa-solid fa-brain glow-text"></i>
+            <span>Placement<span class="highlight gradient-text">GPT</span></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#home" class="active">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="mock-interview.html">Mock Interview</a></li>
+            <li><a href="resume-analyzer.html">Resume Analyzer</a></li>
+        </ul>
+        <div class="nav-auth" id="nav-auth-container">
+            <a href="login.html" class="btn btn-outline">Login</a>
+            <a href="login.html" class="btn btn-primary">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">🚀 Next-Gen Career OS</div>
+            <h1 class="hero-title">Your AI Placement <span class="gradient-text">Mentor</span></h1>
+            <p class="hero-subtitle">Master your interviews with AI-powered preparation.</p>
+            <div class="typing-container">
+                <span id="typing-text"></span><span class="cursor">|</span>
+            </div>
+            <div class="hero-cta">
+                <a href="dashboard.html" class="btn btn-primary btn-lg magnetic">
+                    Start Preparing <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a href="resume-analyzer.html" class="btn btn-glass btn-lg magnetic">
+                    Analyze Resume <i class="fa-solid fa-file-pdf"></i>
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat"><span class="stat-num">98%</span><span class="stat-label">Success Rate</span></div>
+                <div class="stat"><span class="stat-num">50k+</span><span class="stat-label">Students Placed</span></div>
+                <div class="stat"><span class="stat-num">24/7</span><span class="stat-label">AI Mentorship</span></div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hologram-container tilt-effect">
+                <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="AI Robot Hologram" class="hologram-img" style="border-radius: 20px;">
+                <div class="scanner-line"></div>
+                <!-- Floating Elements -->
+                <div class="float-card card-1">
+                    <i class="fa-solid fa-check-circle text-green"></i> ATS Score: 95%
+                </div>
+                <div class="float-card card-2">
+                    <i class="fa-solid fa-code text-blue"></i> Code Optimized
+                </div>
+                <div class="float-card card-3">
+                    <i class="fa-solid fa-bolt text-yellow"></i> Ready for Interview
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <h2 class="section-title">AI-Powered <span class="gradient-text">Arsenal</span></h2>
+        <p class="section-subtitle">Everything you need to crack your dream company.</p>
+        
+        <div class="features-grid">
+            <div class="feature-card glass-card">
+                <div class="feature-icon"><i class="fa-solid fa-file-contract"></i></div>
+                <h3>Resume Analyzer</h3>
+                <p>AI scans your resume against ATS algorithms to ensure you get shortlisted every time.</p>
+            </div>
+            <div class="feature-card glass-card">
+                <div class="feature-icon"><i class="fa-solid fa-video"></i></div>
+                <h3>Mock Interviews</h3>
+                <p>Simulate real HR and Technical rounds with our intelligent virtual avatar.</p>
+            </div>
+            <div class="feature-card glass-card">
+                <div class="feature-icon"><i class="fa-solid fa-route"></i></div>
+                <h3>Coding Roadmap</h3>
+                <p>Personalized step-by-step guides tailored to your dream company and current skills.</p>
+            </div>
+            <div class="feature-card glass-card">
+                <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
+                <h3>Aptitude Tests</h3>
+                <p>Dynamic question generation for Quant, Reasoning, and Verbal abilities.</p>
+            </div>
+            <div class="feature-card glass-card">
+                <div class="feature-icon"><i class="fa-solid fa-comment-dots"></i></div>
+                <h3>HR Answer Enhancer</h3>
+                <p>Refine your interview answers to sound more professional and impactful.</p>
+            </div>
+            <div class="feature-card glass-card">
+                <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <h3>Confidence Tracking</h3>
+                <p>Real-time analysis of your speech, emotion, and consistency to boost your confidence.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chatbot Assistant -->
+    <div class="ai-assistant">
+        <div class="assistant-btn">
+            <i class="fa-solid fa-robot"></i>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const authContainer = document.getElementById('nav-auth-container');
+            if(localStorage.getItem('userLoggedIn') === 'true') {
+                const dp = localStorage.getItem('userDp') || 'https://i.pravatar.cc/150?img=11';
+                const name = localStorage.getItem('userName') || 'My Profile';
+                authContainer.innerHTML = `
+                    <a href="dashboard.html" class="btn btn-outline" style="display: flex; align-items: center; gap: 8px; padding: 8px 15px;">
+                        <img src="${dp}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"> 
+                        ${name}
+                    </a>
+                    <button onclick="logout()" class="btn btn-primary" title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                `;
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('userLoggedIn');
+            localStorage.removeItem('userName');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mock Interview - PlacementGPT</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .interview-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            height: calc(100vh - 120px);
+        }
+        
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid var(--glass-border);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+        }
+
+        .webcam-feed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            filter: grayscale(20%); /* slightly cinematic */
+        }
+
+        .ai-avatar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 150px;
+            height: 200px;
+            background: rgba(10, 10, 15, 0.8);
+            border-radius: 12px;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .ai-avatar img {
+            width: 80%;
+            animation: float 4s infinite ease-in-out;
+        }
+
+        .interview-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9), transparent);
+        }
+
+        .question-box {
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .question-box h3 {
+            color: var(--primary);
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-box p {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+
+        .control-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .timer {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Sidebar Panels */
+        .interview-panels {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .transcription-panel {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .transcription-content {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 15px;
+            padding-right: 10px;
+        }
+
+        .transcript-line {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .transcript-line.ai {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .transcript-line.user {
+            color: white;
+        }
+
+        .metrics-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .live-metric {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .live-metric:last-child {
+            margin-bottom: 0;
+        }
+
+        .metric-name {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .metric-bar {
+            width: 100px;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .metric-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 85%;
+            transition: width 0.3s ease;
+        }
+
+        .fill-green { background: #00ff88; }
+        .fill-yellow { background: #ffcc00; }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+    
+    <aside class="sidebar">
+        <!-- Sidebar content same as dashboard -->
+        <a href="index.html" class="logo sidebar-logo" style="text-decoration: none; color: inherit;">
+            <i class="fa-solid fa-brain glow-text"></i>
+            <span>Placement<span class="highlight gradient-text">GPT</span></span>
+        </a>
+        <ul class="sidebar-links">
+            <li><a href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="resume-analyzer.html"><i class="fa-solid fa-file-contract"></i> Resume Analyzer</a></li>
+            <li><a href="mock-interview.html" class="active"><i class="fa-solid fa-video"></i> Mock Interview</a></li>
+            <li><a href="roadmap.html"><i class="fa-solid fa-route"></i> Roadmap</a></li>
+        </ul>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <div>
+                <h1 class="font-heading">Technical Interview Simulation</h1>
+                <p class="text-muted">Role: Software Engineer • Company Focus: Google</p>
+            </div>
+            <button class="btn btn-outline text-accent border-accent hover-bg-accent" id="end-interview-btn">End Interview</button>
+        </header>
+
+        <div class="interview-layout">
+            <!-- Video Area -->
+            <div class="video-container">
+                <video id="webcam-feed" class="webcam-feed" autoplay muted playsinline style="background: #111;"></video>
+                
+                <div class="timer" id="interview-timer">00:00</div>
+                
+                <div id="setup-overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h2 class="font-heading" style="margin-bottom: 20px;">Interview Setup</h2>
+                    <p style="margin-bottom: 20px; color: var(--text-muted);">Select the domain for your technical interview.</p>
+                    <select id="domain-select" class="input-field" style="width: 300px; margin-bottom: 20px; background: #111; color: white;">
+                        <option value="web">Web Development</option>
+                        <option value="python">Python Developer</option>
+                        <option value="java">Java Developer</option>
+                    </select>
+                    <button class="btn btn-primary magnetic" id="start-setup-btn">Start Mock Interview</button>
+                </div>
+                
+                <div class="ai-avatar">
+                    <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="AI Interviewer">
+                </div>
+
+                <div class="interview-overlay">
+                    <div class="question-box">
+                        <h3 id="question-counter">Current Question 1/5</h3>
+                        <p id="current-question">Initializing AI Mentor...</p>
+                    </div>
+                    <div class="controls">
+                        <button class="control-btn" id="btn-mic"><i class="fa-solid fa-microphone-slash"></i></button>
+                        <button class="control-btn" id="btn-cam"><i class="fa-solid fa-video-slash"></i></button>
+                        <button class="control-btn active" id="btn-cc"><i class="fa-solid fa-closed-captioning"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side Panels -->
+            <div class="interview-panels">
+                <div class="metrics-panel">
+                    <h3>Live Analysis</h3>
+                    <div style="margin-top: 15px;">
+                        <div class="live-metric">
+                            <span class="metric-name">Confidence</span>
+                            <div class="metric-bar"><div class="metric-fill fill-green" style="width: 90%;"></div></div>
+                        </div>
+                        <div class="live-metric">
+                            <span class="metric-name">Pacing</span>
+                            <div class="metric-bar"><div class="metric-fill fill-yellow" style="width: 65%;"></div></div>
+                        </div>
+                        <div class="live-metric">
+                            <span class="metric-name">Filler Words</span>
+                            <div class="metric-bar"><div class="metric-fill" style="width: 20%; background: var(--accent);"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="transcription-panel">
+                    <h3>Live Transcript</h3>
+                    <div class="transcription-content" id="transcript-box">
+                        <div class="transcript-line ai">
+                            <strong>AI Mentor:</strong> <span id="ai-typing">Starting interview...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/app.js"></script>
+    <script>
+        const questionBank = {
+            web: [
+                { q: "Welcome! Can you explain the difference between let, const, and var in JavaScript?", key: ["scope", "reassign", "block", "hoisting"], correct: "Let and const are block-scoped, while var is function-scoped." },
+                { q: "What is the Virtual DOM in React and why is it useful?", key: ["copy", "memory", "reconciliation", "fast", "performance"], correct: "It is a lightweight copy of the actual DOM used to optimize rendering and improve performance." },
+                { q: "How do you handle asynchronous operations in JavaScript?", key: ["promise", "async", "await", "callback"], correct: "Asynchronous operations are best handled using Promises or async/await syntax." }
+            ],
+            python: [
+                { q: "Welcome! What are decorators in Python?", key: ["function", "wrap", "modify", "behavior"], correct: "Decorators are functions that modify the behavior of other functions by wrapping them." },
+                { q: "Explain the difference between a list and a tuple.", key: ["mutable", "immutable", "change", "brackets"], correct: "Lists are mutable and use square brackets, while tuples are immutable and use parentheses." },
+                { q: "What is the Global Interpreter Lock (GIL)?", key: ["thread", "execute", "mutex", "concurrent"], correct: "The GIL is a mutex that protects access to Python objects, preventing multiple threads from executing Python bytecodes at once." }
+            ],
+            java: [
+                { q: "Welcome! What is the difference between an Interface and an Abstract Class?", key: ["multiple", "implement", "extend", "methods"], correct: "Abstract classes can have state and implemented methods, while interfaces traditionally only have method signatures." },
+                { q: "Explain the concept of Garbage Collection in Java.", key: ["memory", "automatic", "unused", "objects", "heap"], correct: "Garbage collection is the process of automatically freeing memory on the heap by deleting objects that are no longer reachable." },
+                { q: "What is the difference between HashMap and HashTable?", key: ["synchronize", "thread", "null", "safe"], correct: "HashTable is synchronized and thread-safe, whereas HashMap is not. Also, HashMap allows one null key." }
+            ]
+        };
+        
+        let questions = [];
+        let currentQuestionIdx = 0;
+        let isInterviewActive = false;
+        let localStream = null;
+        let recognition = null;
+        let seconds = 0;
+        let timerInterval;
+
+        const videoEl = document.getElementById('webcam-feed');
+        const questionText = document.getElementById('current-question');
+        const questionCounter = document.getElementById('question-counter');
+        const transcriptBox = document.getElementById('transcript-box');
+        const timerEl = document.getElementById('interview-timer');
+        const btnMic = document.getElementById('btn-mic');
+        const btnCam = document.getElementById('btn-cam');
+        const btnEnd = document.getElementById('end-interview-btn');
+        const setupOverlay = document.getElementById('setup-overlay');
+        const btnStartSetup = document.getElementById('start-setup-btn');
+
+        btnStartSetup.addEventListener('click', () => {
+            const domain = document.getElementById('domain-select').value;
+            questions = questionBank[domain];
+            setupOverlay.style.display = 'none';
+            setTimeout(startWebcam, 500);
+        });
+
+        // Setup Speech Recognition
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                
+                if(finalTranscript) {
+                    appendTranscript('You', finalTranscript, 'user');
+                    
+                    // Automatically evaluate answer and trigger next question after a short delay
+                    setTimeout(() => evaluateAndNext(finalTranscript), 2000);
+                }
+            };
+        } else {
+            console.warn("Speech recognition not supported in this browser.");
+        }
+
+        async function startWebcam() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                videoEl.srcObject = localStream;
+                btnCam.classList.add('active');
+                btnCam.innerHTML = '<i class="fa-solid fa-video"></i>';
+                btnMic.classList.add('active');
+                btnMic.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+                
+                isInterviewActive = true;
+                startTimer();
+                nextQuestion();
+                if(recognition) recognition.start();
+            } catch(e) {
+                alert("Camera/Mic access denied. Simulation will run without live feed.");
+                isInterviewActive = true;
+                startTimer();
+                nextQuestion();
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                seconds++;
+                const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+                const secs = String(seconds % 60).padStart(2, '0');
+                timerEl.innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function speakAI(text) {
+            if('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.pitch = 1;
+                utterance.rate = 0.9;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function appendTranscript(speaker, text, type) {
+            const div = document.createElement('div');
+            div.className = `transcript-line ${type}`;
+            div.innerHTML = `<strong>${speaker}:</strong> ${text}`;
+            transcriptBox.appendChild(div);
+            transcriptBox.scrollTop = transcriptBox.scrollHeight;
+        }
+
+        function evaluateAndNext(userAnswer) {
+            if(!isInterviewActive || currentQuestionIdx >= questions.length) return;
+            
+            const currentQ = questions[currentQuestionIdx - 1]; // Because currentQuestionIdx was already incremented when asking the question
+            let isCorrect = false;
+            
+            if(currentQ) {
+                const answerLower = userAnswer.toLowerCase();
+                currentQ.key.forEach(k => {
+                    if(answerLower.includes(k)) isCorrect = true;
+                });
+            }
+            
+            nextQuestion(isCorrect, currentQ ? currentQ.correct : "");
+        }
+
+        function nextQuestion(wasCorrect = true, correctReason = "") {
+            if(!isInterviewActive || currentQuestionIdx >= questions.length) {
+                if(currentQuestionIdx >= questions.length) endInterview();
+                return;
+            }
+            
+            let intro = "";
+            if (currentQuestionIdx > 0) {
+                if(wasCorrect) {
+                    const praises = ["Spot on.", "Great answer.", "Exactly right.", "You nailed it."];
+                    intro = praises[Math.floor(Math.random() * praises.length)] + " Let's move on. ";
+                } else {
+                    intro = "Not quite. " + correctReason + " Now, next question. ";
+                }
+            }
+            
+            const qObj = questions[currentQuestionIdx];
+            const qText = intro + qObj.q;
+            
+            questionCounter.innerText = `Current Question ${currentQuestionIdx + 1}/${questions.length}`;
+            questionText.innerText = qObj.q; 
+            
+            appendTranscript('AI Mentor', qText, 'ai');
+            speakAI(qText);
+            
+            currentQuestionIdx++;
+        }
+
+        function endInterview() {
+            isInterviewActive = false;
+            clearInterval(timerInterval);
+            if(recognition) recognition.stop();
+            if(localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            videoEl.srcObject = null;
+            
+            // Save activity
+            let activities = JSON.parse(localStorage.getItem('activities') || '[]');
+            activities.unshift({
+                icon: 'fa-video',
+                color: 'purple',
+                title: 'Mock Interview Completed',
+                desc: 'Role: Software Engineer',
+                time: 'Just now'
+            });
+            localStorage.setItem('activities', JSON.stringify(activities));
+            
+            alert("Interview Ended! Score and Analysis saved to Dashboard.");
+            window.location.href = 'dashboard.html';
+        }
+
+        btnEnd.addEventListener('click', endInterview);
+        
+        btnCam.addEventListener('click', () => {
+            if(!localStream) return;
+            const videoTrack = localStream.getVideoTracks()[0];
+            if(videoTrack) {
+                videoTrack.enabled = !videoTrack.enabled;
+                btnCam.classList.toggle('active', videoTrack.enabled);
+                btnCam.innerHTML = videoTrack.enabled ? '<i class="fa-solid fa-video"></i>' : '<i class="fa-solid fa-video-slash"></i>';
+            }
+        });
+        
+        btnMic.addEventListener('click', () => {
+            if(!localStream) return;
+            const audioTrack = localStream.getAudioTracks()[0];
+            if(audioTrack) {
+                audioTrack.enabled = !audioTrack.enabled;
+                btnMic.classList.toggle('active', audioTrack.enabled);
+                btnMic.innerHTML = audioTrack.enabled ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-microphone-slash"></i>';
+                if(audioTrack.enabled && recognition) recognition.start();
+                if(!audioTrack.enabled && recognition) recognition.stop();
+            }
+        });
+
+        // Setup screen overlay handles starting the webcam now.
+    </script>
+</body>
+</html>

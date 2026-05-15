@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aptitude Test - PlacementGPT</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .test-container {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 20px;
+        }
+
+        .timer-badge {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: var(--font-heading);
+            font-weight: bold;
+            font-size: 18px;
+            border: 1px solid var(--primary);
+            animation: pulse 2s infinite;
+        }
+
+        .question-box {
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .option-btn.selected {
+            background: var(--primary);
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+        
+        .option-btn.correct {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+        }
+        
+        .option-btn.wrong {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .test-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+    
+    <aside class="sidebar">
+        <a href="index.html" class="logo sidebar-logo" style="text-decoration: none; color: inherit;">
+            <i class="fa-solid fa-brain glow-text"></i>
+            <span>Placement<span class="highlight gradient-text">GPT</span></span>
+        </a>
+        <ul class="sidebar-links">
+            <li><a href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="resume-analyzer.html"><i class="fa-solid fa-file-contract"></i> Resume Analyzer</a></li>
+            <li><a href="mock-interview.html"><i class="fa-solid fa-video"></i> Mock Interview</a></li>
+            <li><a href="roadmap.html"><i class="fa-solid fa-route"></i> Roadmap</a></li>
+            <li><a href="aptitude.html" class="active"><i class="fa-solid fa-brain"></i> Aptitude Test</a></li>
+            <li><a href="hr-answers.html"><i class="fa-solid fa-comment-dots"></i> HR Answers</a></li>
+        </ul>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <div>
+                <h1 class="font-heading">AI Aptitude Generator</h1>
+                <p class="text-muted">Dynamic quant and logical reasoning test tailored for tech companies.</p>
+            </div>
+        </header>
+
+        <div class="test-container" id="test-view">
+            <div class="test-header">
+                <h3>Question <span id="q-num">1</span>/5</h3>
+                <div class="timer-badge" id="test-timer">05:00</div>
+            </div>
+
+            <div class="question-box">
+                <p class="question-text" id="q-text">A train running at the speed of 60 km/hr crosses a pole in 9 seconds. What is the length of the train?</p>
+                <div class="options-grid" id="options-container">
+                    <button class="option-btn" onclick="selectOption(this, false)">120 meters</button>
+                    <button class="option-btn" onclick="selectOption(this, false)">180 meters</button>
+                    <button class="option-btn" onclick="selectOption(this, false)">324 meters</button>
+                    <button class="option-btn" onclick="selectOption(this, true)">150 meters</button>
+                </div>
+            </div>
+
+            <div class="test-controls">
+                <button class="btn btn-outline" id="btn-submit" onclick="submitAnswer()" disabled>Submit Answer</button>
+                <button class="btn btn-primary magnetic" id="btn-next" onclick="nextQuestion()" style="display: none;">Next <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="js/app.js"></script>
+    <script>
+        const allQuestions = [
+            { q: "A train running at the speed of 60 km/hr crosses a pole in 9 seconds. What is the length of the train?", options: ["120 meters", "180 meters", "324 meters", "150 meters"], correct: 3 },
+            { q: "Look at this series: 2, 1, (1/2), (1/4), ... What number should come next?", options: ["(1/3)", "(1/8)", "(2/8)", "(1/16)"], correct: 1 },
+            { q: "In a certain code, COMPUTER is written as RFUVQNPC. How is MEDICINE written in that code?", options: ["EOJDJEFM", "EOJDEJFM", "MFEJDJOE", "MFEDJJOE"], correct: 0 },
+            { q: "A sum of money at simple interest amounts to Rs. 815 in 3 years and to Rs. 854 in 4 years. The sum is:", options: ["Rs. 650", "Rs. 690", "Rs. 698", "Rs. 700"], correct: 2 },
+            { q: "Find the odd man out: 3, 5, 11, 14, 17, 21", options: ["21", "17", "14", "3"], correct: 2 },
+            { q: "If A is the brother of B; B is the sister of C; and C is the father of D, how D is related to A?", options: ["Brother", "Sister", "Nephew", "Cannot be determined"], correct: 3 },
+            { q: "A can do a work in 15 days and B in 20 days. If they work on it together for 4 days, then the fraction of the work that is left is:", options: ["1/4", "1/10", "7/15", "8/15"], correct: 3 }
+        ];
+
+        // Randomize and pick 5
+        let questions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 5);
+
+        let currQ = 0;
+        let score = 0;
+        let selectedBtn = null;
+        let isCorrect = false;
+
+        function loadQuestion() {
+            if(currQ >= questions.length) {
+                endTest();
+                return;
+            }
+            const q = questions[currQ];
+            document.getElementById('q-num').innerText = currQ + 1;
+            document.getElementById('q-text').innerText = q.q;
+            
+            const opts = document.getElementById('options-container');
+            opts.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                opts.innerHTML += `<button class="option-btn" onclick="selectOption(this, ${idx === q.correct})">${opt}</button>`;
+            });
+            
+            document.getElementById('btn-submit').style.display = 'block';
+            document.getElementById('btn-submit').disabled = true;
+            document.getElementById('btn-next').style.display = 'none';
+        }
+
+        function selectOption(btn, correct) {
+            if(document.getElementById('btn-next').style.display === 'block') return; // already submitted
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedBtn = btn;
+            isCorrect = correct;
+            document.getElementById('btn-submit').disabled = false;
+        }
+
+        function submitAnswer() {
+            if(!selectedBtn) return;
+            if(isCorrect) {
+                selectedBtn.classList.add('correct');
+                score++;
+            } else {
+                selectedBtn.classList.add('wrong');
+                // find correct and highlight
+                const q = questions[currQ];
+                document.querySelectorAll('.option-btn')[q.correct].classList.add('correct');
+            }
+            
+            document.getElementById('btn-submit').style.display = 'none';
+            document.getElementById('btn-next').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currQ++;
+            loadQuestion();
+        }
+
+        function endTest() {
+            document.getElementById('test-view').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fa-solid fa-trophy text-yellow" style="font-size: 60px; margin-bottom: 20px;"></i>
+                    <h2 class="font-heading" style="font-size: 32px; margin-bottom: 10px;">Test Completed!</h2>
+                    <p class="text-muted" style="font-size: 18px; margin-bottom: 30px;">You scored ${score} out of ${questions.length}</p>
+                    <a href="dashboard.html" class="btn btn-primary magnetic">Return to Dashboard</a>
+                </div>
+            `;
+            
+            // Log activity
+            let activities = JSON.parse(localStorage.getItem('activities') || '[]');
+            activities.unshift({
+                icon: 'fa-brain',
+                color: 'yellow',
+                title: 'Aptitude Test Taken',
+                desc: `Score: ${score}/${questions.length}`,
+                time: 'Just now'
+            });
+            localStorage.setItem('activities', JSON.stringify(activities));
+        }
+
+        loadQuestion();
+        
+        // Timer simulation - 30 minutes
+        let time = 1800;
+        let timerInterval = setInterval(() => {
+            if (time <= 0) {
+                clearInterval(timerInterval);
+                endTest();
+                return;
+            }
+            time--;
+            const m = String(Math.floor(time/60)).padStart(2,'0');
+            const s = String(time%60).padStart(2,'0');
+            document.getElementById('test-timer').innerText = `${m}:${s}`;
+        }, 1000);
+
+    </script>
+</body>
+</html>

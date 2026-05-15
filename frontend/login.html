@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Signup - PlacementGPT</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 5%;
+        }
+
+        .auth-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .auth-left {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-right {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(112, 0, 255, 0.2), rgba(0, 240, 255, 0.2));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            text-align: center;
+            border-left: 1px solid var(--glass-border);
+        }
+
+        .auth-right img {
+            width: 80%;
+            max-width: 300px;
+            animation: float 6s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.3));
+            margin-bottom: 30px;
+        }
+
+        .auth-title {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .auth-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .input-group input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 15px 45px 15px 15px;
+            border-radius: 12px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 42px;
+            color: var(--text-muted);
+        }
+
+        .auth-btn {
+            margin-top: 10px;
+            padding: 16px;
+            font-size: 16px;
+            border-radius: 12px;
+            justify-content: center;
+        }
+
+        .toggle-auth {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .toggle-auth a {
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .toggle-auth a:hover {
+            text-decoration: underline;
+        }
+
+        /* Password Strength */
+        .password-strength {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border-left: 4px solid var(--primary);
+            padding: 15px 25px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .error-border { border-left-color: var(--accent) !important; }
+        .success-border { border-left-color: #00ff88 !important; }
+
+        @media (max-width: 900px) {
+            .auth-card {
+                flex-direction: column;
+            }
+            .auth-right {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+    <div class="mouse-glow"></div>
+
+    <div class="notification" id="notification">
+        <i class="fa-solid fa-circle-info" id="notif-icon"></i>
+        <span id="notif-text">Message</span>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            
+            <div class="auth-left" id="login-section">
+                <a href="index.html" class="logo" style="margin-bottom: 40px; text-decoration: none; color: inherit;">
+                    <i class="fa-solid fa-brain glow-text"></i>
+                    <span>Placement<span class="highlight gradient-text">GPT</span></span>
+                </a>
+
+                <h1 class="auth-title font-heading">Welcome Back</h1>
+                <p class="auth-subtitle">Login to continue your preparation journey.</p>
+
+                <form class="auth-form" id="login-form">
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="login-email" required placeholder="alex@example.com">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                    </div>
+                    <button type="submit" class="btn btn-primary auth-btn magnetic">Login <i class="fa-solid fa-arrow-right"></i></button>
+                </form>
+
+                <div class="toggle-auth">
+                    Don't have an account? <a onclick="toggleAuth('signup')">Sign Up</a>
+                </div>
+            </div>
+
+            <div class="auth-left" id="signup-section" style="display: none;">
+                <a href="index.html" class="logo" style="margin-bottom: 40px; text-decoration: none; color: inherit;">
+                    <i class="fa-solid fa-brain glow-text"></i>
+                    <span>Placement<span class="highlight gradient-text">GPT</span></span>
+                </a>
+
+                <h1 class="auth-title font-heading">Create Account</h1>
+                <p class="auth-subtitle">Start your AI-powered preparation today.</p>
+
+                <form class="auth-form" id="signup-form">
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" id="signup-name" required placeholder="Alex Johnson">
+                        <i class="fa-solid fa-user input-icon"></i>
+                    </div>
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="signup-email" required placeholder="alex@example.com">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="signup-password" required placeholder="••••••••">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <div class="password-strength" id="strength-container">
+                            <div class="strength-bar" id="strength-bar"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary auth-btn magnetic">Create Account <i class="fa-solid fa-user-plus"></i></button>
+                </form>
+
+                <div class="toggle-auth">
+                    Already have an account? <a onclick="toggleAuth('login')">Login</a>
+                </div>
+            </div>
+
+            <div class="auth-right">
+                <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="AI Robot" style="border-radius: 20px;">
+                <h2 class="font-heading">Your Dream Job Awaits</h2>
+                <p class="text-muted" style="margin-top: 15px; max-width: 80%;">Join thousands of students who cracked top companies using AI mock interviews and smart roadmaps.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Toggle between Login and Signup
+        function toggleAuth(type) {
+            const loginSec = document.getElementById('login-section');
+            const signupSec = document.getElementById('signup-section');
+            
+            if(type === 'signup') {
+                loginSec.style.display = 'none';
+                signupSec.style.display = 'flex';
+                signupSec.style.animation = 'slideIn 0.5s ease forwards';
+            } else {
+                signupSec.style.display = 'none';
+                loginSec.style.display = 'flex';
+                loginSec.style.animation = 'slideIn 0.5s ease forwards';
+            }
+        }
+
+        // Notification System
+        function showNotification(msg, type='success') {
+            const notif = document.getElementById('notification');
+            const icon = document.getElementById('notif-icon');
+            const text = document.getElementById('notif-text');
+
+            text.innerText = msg;
+            notif.className = 'notification show ' + (type==='error' ? 'error-border' : 'success-border');
+            icon.className = type==='error' ? 'fa-solid fa-circle-xmark text-accent' : 'fa-solid fa-check-circle text-green';
+
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
+        }
+
+        // Password Strength Indicator
+        document.getElementById('signup-password').addEventListener('input', function(e) {
+            const val = e.target.value;
+            const container = document.getElementById('strength-container');
+            const bar = document.getElementById('strength-bar');
+            
+            if(val.length > 0) {
+                container.style.display = 'block';
+                if(val.length < 5) {
+                    bar.style.width = '33%';
+                    bar.style.background = '#ff0055';
+                } else if(val.length < 8) {
+                    bar.style.width = '66%';
+                    bar.style.background = '#ffcc00';
+                } else {
+                    bar.style.width = '100%';
+                    bar.style.background = '#00ff88';
+                }
+            } else {
+                container.style.display = 'none';
+            }
+        });
+
+        // Mock Auth Logic (Simulating Real Work)
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showNotification('Logging in...', 'success');
+            setTimeout(() => {
+                localStorage.setItem('userLoggedIn', 'true');
+                localStorage.setItem('forceProfileEdit', 'true');
+                window.location.href = 'dashboard.html';
+            }, 1000);
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            showNotification('Account Created Successfully!', 'success');
+            setTimeout(() => {
+                localStorage.setItem('userLoggedIn', 'true');
+                localStorage.setItem('userName', name);
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
