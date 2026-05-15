@@ -1,6 +1,6 @@
 # PlacementGPT - Your AI Placement Mentor
 
-**🔗 Live Demo:** [**PlacementGPT Live**](https://hiral1609.github.io/PlacementGPT-/frontend/)
+**🔗 Live Demo:** [**PlacementGPT Live**](https://hiral1609.github.io/PlacementGPT-/)
 
 ![PlacementGPT](https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80)
 
