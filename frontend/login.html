@@ -331,21 +331,39 @@
         // Mock Auth Logic (Simulating Real Work)
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            showNotification('Logging in...', 'success');
-            setTimeout(() => {
-                localStorage.setItem('userLoggedIn', 'true');
-                localStorage.setItem('forceProfileEdit', 'true');
-                window.location.href = 'dashboard.html';
-            }, 1000);
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+
+            const regEmail = localStorage.getItem('registeredEmail');
+            const regPass = localStorage.getItem('registeredPassword');
+
+            if (email === regEmail && pass === regPass) {
+                showNotification('Logging in...', 'success');
+                setTimeout(() => {
+                    localStorage.setItem('userLoggedIn', 'true');
+                    localStorage.setItem('forceProfileEdit', 'true');
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            } else if (!regEmail) {
+                showNotification('No account found. Please Sign Up first!', 'error');
+            } else {
+                showNotification('Invalid Email or Password!', 'error');
+            }
         });
 
         document.getElementById('signup-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const pass = document.getElementById('signup-password').value;
+
+            localStorage.setItem('registeredEmail', email);
+            localStorage.setItem('registeredPassword', pass);
+            localStorage.setItem('userName', name);
+
             showNotification('Account Created Successfully!', 'success');
             setTimeout(() => {
                 localStorage.setItem('userLoggedIn', 'true');
-                localStorage.setItem('userName', name);
                 window.location.href = 'dashboard.html';
             }, 1500);
         });
